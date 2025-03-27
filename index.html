@@ -109,14 +109,31 @@
     <div id="line-chart"></div>
     <br /><br /><br />
     <div id="bubble-chart"></div>
-
-    <!-- JS libraries first -->
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <!-- Then your JS file -->
-    <script src="static/script.js"></script>
   </div>
-</body>
 
+  <!-- External Libraries -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+  <!-- Embedded JS logic -->
+  <script>
+    let dataURL;
+
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+      dataURL = "/mongo_data";
+    } else {
+      dataURL = "static/cleanDataset.json";
+    }
+
+    d3.json(dataURL)
+      .then(mongoData => {
+        console.log("Data Loaded:", mongoData);
+        // Insert your chart functions, filters, and render logic here!
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  </script>
+</body>
 </html>
 
