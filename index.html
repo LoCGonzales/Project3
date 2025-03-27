@@ -2,21 +2,11 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Project3</title>
-
-  <!-- Local stylesheet -->
-  <link rel="stylesheet" href="static/css/style.css" />
-
-  <!-- Bootstrap CDN -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-    crossorigin="anonymous"
-  />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remote Work & Mental Health Dashboard</title>
+  <link rel="stylesheet" href="static/css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -26,15 +16,6 @@
         <h1>Remote Work & Mental Health Dashboard</h1>
       </div>
     </div>
-
-    <div class="row p-3">
-      <div>
-        <h5 class="text-center">
-          Industry Insights and the relationships with mental health, regions, and work locations.
-        </h5>
-      </div>
-    </div>
-
     <div class="row">
       <div class="filters-container">
         <div class="filter-row d-flex justify-content-around">
@@ -58,85 +39,46 @@
           </div>
         </div>
       </div>
-
-      <div id="chart"></div>
-
-      <div class="text-center">
-        <b>Mental Health by Region and Industry:</b><br />
-        Africa: High rates of depression in healthcare and burnout in education.<br />
-        Asia: High anxiety in retail and burnout in finance.<br />
-        Europe: IT has significant levels of burnout and depression.<br />
-        North America: Retail sees more cases of anxiety, while education has higher burnout.<br />
-        Oceania: Finance shows high burnout and depression.<br />
-        South America: Finance sees high anxiety and depression.<br />
-      </div>
     </div>
 
-    <br /><br /><br />
+    <div id="chart"></div>
 
-    <div id="barChart"></div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+      let dataURL;
+      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        dataURL = "/mongo_data";
+      } else {
+        dataURL = "cleanDataset.json";
+      }
 
-    <div id="summary" class="mt-2 text-center">
-      <b>Summary</b><br />
-      Satisfaction is slightly higher for onsite workers compared to hybrid and remote.<br />
-      Remote work has a lower satisfaction rate, with higher percentages in the Neutral and Unsatisfied categories.<br />
-      Hybrid work shows a fairly even distribution, with no dominant satisfaction level, which might suggest that hybrid
-      work arrangements cater to a wide range of experiences.
-    </div>
+      d3.json(dataURL)
+        .then(data => {
+          console.log("Data Loaded:", data);
 
-    <br /><br /><br />
-    <div id="hours-mental-chart" style="width: 100%; height: 600px;"></div>
-    <div id="summary2" class="mt-2 text-center">
-      <b>Summary</b><br />
-      Anxiety, Total Hours: 50363, Average Hours: 39.41, Count: 1278<br />
-      Burnout, Total Hours: 51240, Average Hours: 40.03, Count: 1280<br />
-      Depression, Total Hours: 49378, Average Hours: 39.63, Count: 1246<br />
-      None, Total Hours: 47092, Average Hours: 39.37, Count: 1196<br />
-      Employees experiencing burnout not only have the highest total hours but also the highest average hours worked per
-      week, indicating a possible link between overwork and burnout symptoms. Those experiencing anxiety and depression
-      report slightly lower average hours worked compared to the burnout group, but still more than those with no
-      reported mental health issues. Interestingly, employees without any reported mental health conditions have both
-      the lowest total and average hours worked per week, which might suggest better work-life balance or less workload.
-    </div>
+          // Example: render a simple bar chart to verify it works
+          const industryCounts = d3.rollups(data, v => v.length, d => d.Industry);
 
-    <br /><br /><br />
-    <div id="stacked-bar-chart" style="width: 100%; height: 600px;"></div>
-    <br /><br /><br />
-    <div id="xian-second" style="width: 100%; height: 600px;"></div>
-    <br /><br /><br />
-    <div id="job-bar-chart" style="width: 100%; height: 600px;"></div>
-    <br /><br /><br />
-    <div id="line-chart"></div>
-    <br /><br /><br />
-    <div id="bubble-chart"></div>
-  </div>
+          const trace = {
+            x: industryCounts.map(d => d[0]),
+            y: industryCounts.map(d => d[1]),
+            type: 'bar'
+          };
 
-  <!-- External Libraries -->
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+          const layout = {
+            title: 'Respondents by Industry',
+            xaxis: { title: 'Industry' },
+            yaxis: { title: 'Count' }
+          };
 
-  <!-- Embedded JS logic -->
-  <script>
-    let dataURL;
-    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-      dataURL = "/mongo_data";
-    } else {
-      dataURL = "static/cleanDataset.json";
-    }
-
-    d3.json(dataURL)
-      .then(mongoData => {
-        console.log("Data Loaded:", mongoData);
-
-        // Place all your chart rendering functions and logic here
-        // Example placeholder: initCharts(mongoData);
-
-        // Example: populate filters and set event listeners
-        // populateFilters(mongoData);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-  </script>
+          Plotly.newPlot('chart', [trace], layout);
+        })
+        .catch(error => {
+          console.error("Error loading data:", error);
+        });
+    </script>
 </body>
+
 </html>
+
