@@ -118,7 +118,6 @@
   <!-- Embedded JS logic -->
   <script>
     let dataURL;
-
     if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
       dataURL = "/mongo_data";
     } else {
@@ -128,7 +127,12 @@
     d3.json(dataURL)
       .then(mongoData => {
         console.log("Data Loaded:", mongoData);
-        // Insert your chart functions, filters, and render logic here!
+
+        // Place all your chart rendering functions and logic here
+        // Example placeholder: initCharts(mongoData);
+
+        // Example: populate filters and set event listeners
+        // populateFilters(mongoData);
       })
       .catch(error => {
         console.error("Error fetching data:", error);
@@ -136,4 +140,3 @@
   </script>
 </body>
 </html>
-
